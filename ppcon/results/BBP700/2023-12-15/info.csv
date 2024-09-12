@@ -1,0 +1,2 @@
+,train_ds,is_toy,batch_size,epoch,lr,dp_rate,lambda_l2_reg,alpha_smooth_reg
+0,SUPERFLOAT,False,32,200,1.0,0.0,0.0,0.0001
