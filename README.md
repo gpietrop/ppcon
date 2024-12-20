@@ -1,57 +1,95 @@
-# PPCon 1.0: Biogeochemical Argo Profile Prediction with 1D Convolutional Networks
+# ppcon
 
-Python implementation for paper "PPCon 1.0: Biogeochemical Argo Profile Prediction with 1D Convolutional Networks", 
-Geoscientific Model Development - 2024:
-
-## Abstract
-Effective observation of the ocean is vital for studying and assessing the state and evolution of the marine ecosystem, and for evaluating the impact of human activities. 
-However, obtaining comprehensive oceanic measurements across temporal and spatial scales and for different biogeochemical variables remains challenging. 
-Autonomous oceanographic instruments, such as Biogeochemical (BGC) Argo profiling floats, have helped expand our ability to obtain subsurface and deep-ocean measurements, but measuring biogeochemical variables such as nutrient concentration still remains more demanding and expensive than measuring physical variables. 
-Therefore, developing methods to estimate marine biogeochemical variables from high-frequency measurements is very much needed. 
-Current Neural Network (NN) models developed for this task are based on a Multilayer Perceptron (MLP) architecture, trained over point-wise pairs of input-output features.
-Although MLPs can produce smooth outputs if the inputs change smoothly, Convolutional Neural Networks (CNNs) are inherently designed to handle profile data effectively.
-In this study, we present a novel one-dimensional (1D) CNN model to predict profiles leveraging the typical shape of vertical profiles of a variable as a prior constraint during training. 
-In particular, the Predict Profiles Convolutional (PPCon) model predicts nitrate, chlorophyll and backscattering (bbp700) starting from the date, geolocation, and temperature, salinity, and oxygen profiles. 
-Its effectiveness is demonstrated using a robust BGC-Argo dataset collected in the Mediterranean Sea for training and validation. 
-Results, which include quantitative metrics and visual representations, prove the capability of PPCon to produce smooth and accurate profile predictions improving previous MLP applications.
-
-## Instructions
-
-The code runs with Python 3.8.5 on Ubuntu 20.04 and macOS. Install the required packages using:
+Python library for the implementation of PPCon (Profile Prediction with 1D Convolutional Networks)
 
 ```bash
 pip install -r requirements.txt 
 ```
 
-To run the code, enter the following command:
+## Training PPCon
+To train the PPCon model, import the following function from the library:
 
-```bash
-python3 run_model.py --variable --epochs --lr --dropout_rate --snaperiod --lambda_l2_reg --batch_size --alpha_smooth_reg
+```python
+from ppcon.run_model import run_training
+
+run_training(variable="NITRATE",
+             batch_size=32,
+             epochs=100,
+             lr=1,
+             snaperiod=25,
+             dropout_rate=0.2,
+             lambda_l2_reg=0.001,
+             alpha_smooth_reg=0.001,
+             attention_max=0,
+             flag_early_stopping=False
+             )
 ```
+
 where the inputs arguments stand for: 
-* `--variable` is the biogeochemical variable considered (that can be: _NITRATE_, _CHLA_, _BBP700_)  
-* `--epochs` is the number of epochs for the training
-*  `--lr` is the learning rate for the training
-*  `--dropout_rate` is the dropout rate for the training
-*  `--snaperiod` is the number of epochs after which the intermediate model is saved
-*  `--lambda_l2_reg` set the multiplicative loss factor for the lambda regularization
-*  `--batch_size` is the batch size for the training
-*  `--alpha_smooth_reg` set the multiplicative loss factor for the smooth regularization
+* `--variable` is the biogeochemical variable considered (that can be: _NITRATE_, _CHLA_, _BBP700_).  
+* `--batch_size` is the batch size for training.
+* `--epochs` is the number of epochs for training.
+*  `--lr` is the learning rate for training.
+*  `--dropout_rate` is the dropout rate for training.
+*  `--snaperiod` is the number of epochs after which the intermediate model is saved.
+*  `--lambda_l2_reg` set the multiplicative loss factor for the lambda regularization.
+* `--alpha_smooth_reg` set the multiplicative loss factor for the smooth regularization.
+* `--attention_max`: max value for attention mechanism, if applicable.
+* `--flag_early_stopping`: boolean flag to enable or disable early stopping.
 
-The datasets are preprocessed and stored in tensor form, ready for training. 
-They are split into training and testing sets and can be found in the  _ds_ folder. 
 
-The results and models from the paper are located in the `results`, directory, which contains subdirectories for each variable. 
-Each subdirectory includes the date of the model training,  `.pt` files for different epochs, and information about training and testing loss. 
+The function `run_training()` will train the PPCon architecture with the same train and test dataset referenced in the original paper.
 
-Pretrained models can be used to generate new data. 
-An example of how to generate new data using the pretrained model can be found in  `make_genrated_dataset/make_generated_ds.py`, 
-specifically in the function `get_reconstruction`.
+### Results and Models
+The results, along with the trained models, will be automatically saved in the `results_ppcon` directory, 
+located in the user's home directory.
+Each subdirectory is specific to the chosen `variable` and includes: 
+* The date of the model training 
+* `.pt` model checkpoint files for different epochs.
+* Logs containing training and testing loss details.
 
-The scripts for reproducing the plots from the paper are located in the `analysis` folder. 
-Example usage can be found in the `analysis/main_analysis.py` function. 
-More specifically:
-* To get __Figure 3-5__ the functions are contained in _analysis/comparison_architecture.py_
-* To get __Figure 6__ the functions are contained in _analysis/scatter_error.py_
-* To get __Figure 7-9__ the functions are contained in _analysis/hovmoller_diagram.py_
-* To get __Figure B1__ the functions are contained in _analysis/profile.py_
+### Running the Script from the Command Line
+You can also run the training script directly from the command line, without needing to import the library:
+```bash
+python3 run_model.py --variable <VARIABLE> --epochs <EPOCHS> --lr <LEARNING_RATE> --dropout_rate <DROPOUT_RATE> --snaperiod <SNAPSHOT_PERIOD> --lambda_l2_reg <L2_REG_STRENGTH> --batch_size <BATCH_SIZE> --alpha_smooth_reg <SMOOTH_REG_STRENGTH>
+```
+This allows for more flexibility when customizing the training process.
+
+### Using Custom Datasets
+
+To use a different dataset, you can replace the training and testing datasets in the `ds/variable/float_ds_sf_{train/test}.csv` files.
+The file structure for datasets is predefined, and users can modify the contents by substituting their own datasets in the specified location.
+
+### Modifying the Model Architecture
+If running the script from the command line, you can also modify the model architecture. For example, you can add or remove convolutional layers. The default architectures are located in:
+* `train/conv1med_dp.py` for convolutional layers.
+* `train/mlp_dp.py` for multi-layer perceptron (MLP) layers.
+
+## Running pretrained ppcon
+
+Pretrained models can be used to predict profiles.  
+The library allow to predict vertical profiles with the PPCon pretrained architerture starting from input provided by the users
+
+### Predicting profiles starting from input
+
+To use the PPCon model on a user input, import the following function from the library:
+
+
+```python
+from ppcon.generate_profile import generate_profiles_from_input
+
+generate_profiles_from_input(variable="NITRATE", 
+                             year=2024, 
+                             month=1, 
+                             day=1, 
+                             lat, 
+                             lon, 
+                             tuple_temp, 
+                             tuple_psal, 
+                             tuple_doxy,
+                             tuple_var=None, date_model=None, epoch_model=None)
+```
+
+where the inputs arguments stand for: 
+* `"MR6901648_109"` is the path 
+* `"CHLA"` is the variable that the user want to predict 

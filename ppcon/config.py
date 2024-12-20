@@ -7,6 +7,9 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # Path to the dataset directory
 DATASET_DIR = os.path.join(BASE_DIR, 'ds')
 
+# Path to the dataset directory
+MODELS_DIR = os.path.join(BASE_DIR, 'results')
+
 home_dir = str(Path.home())
 RESULTS_DIR = os.path.join(home_dir, 'ppcon_results')
 os.makedirs(RESULTS_DIR, exist_ok=True)

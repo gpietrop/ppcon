@@ -7,6 +7,7 @@ import netCDF4 as nc
 
 from torch.utils.data import DataLoader, TensorDataset
 
+from ppcon.config import MODELS_DIR
 from ppcon.utils.dataset import FloatDataset
 from ppcon.utils.utils_train import upload_and_evaluate_model
 from ppcon.dict import *
@@ -334,8 +335,9 @@ def get_reconstruction_user(variable, date_model, epoch_model, mode, data=None):
 
     ds = DataLoader(dataset, shuffle=True)
 
-    dir_model = os.getcwd() + f"/results/{variable}/{date_model}/model"
-    info = pd.read_csv(os.getcwd() + f"/results/{variable}/{date_model}/info.csv")
+    dir_model = os.path.join(MODELS_DIR, f"{variable}/{date_model}/model")
+    print(MODELS_DIR)
+    info = pd.read_csv(os.path.join(MODELS_DIR, f"{variable}/{date_model}/info.csv"))
 
     # Upload and evaluate the model
     model_day, model_year, model_lat, model_lon, model = upload_and_evaluate_model(

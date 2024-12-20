@@ -33,6 +33,8 @@ def generate_profiles_from_file(file_name, variable, date_model=None, epoch_mode
     >>> print(prof)
     tensor([...])
     """
+    # todo: add the possibility to use as input not only file name but also file path
+    # todo: instead of date_model and epoch model use path for pretrained (by the user) date + epoch
 
     dict_models = {
         "NITRATE": ["2023-12-16", 100],

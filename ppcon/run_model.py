@@ -19,7 +19,6 @@ random.seed(123)
 
 
 def run_training(
-        flag_toy=False,
         variable="NITRATE",
         batch_size=32,
         epochs=0,
@@ -34,8 +33,6 @@ def run_training(
     """
     Run the training process for a machine learning model with the specified parameters.
 
-    :param flag_toy: bool, optional
-        If True, use a toy dataset for training. Default is False.
     :param variable: str, optional
         The target variable to predict (e.g., "NITRATE"). Default is "NITRATE".
     :param batch_size: int, optional
@@ -76,7 +73,7 @@ def run_training(
     print(f"saving results in {save_dir}")
 
     # ===== Saving models hyperparameters
-    save_ds_info(training_folder="default", flag_toy=flag_toy, batch_size=batch_size, epochs=epochs, lr=lr,
+    save_ds_info(training_folder="default", batch_size=batch_size, epochs=epochs, lr=lr,
                  dp_rate=dropout_rate, lambda_l2_reg=lambda_l2_reg, save_dir=save_dir,
                  alpha_smooth_reg=alpha_smooth_reg)
 
@@ -91,7 +88,6 @@ def run_training(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--flag_toy', type=bool, default=False)
     parser.add_argument('--variable', type=str, default="NITRATE", choices=["NITRATE", "CHLA", "BBP700"])
     parser.add_argument('--batch_size', type=int, default=32)
     parser.add_argument('--epochs', type=int, default=0)
@@ -106,7 +102,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     run_training(
-        flag_toy=args.flag_toy,
         variable=args.variable,
         batch_size=args.batch_size,
         epochs=args.epochs,

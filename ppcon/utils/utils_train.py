@@ -19,9 +19,8 @@ def from_day_rad_to_day(day_rad):
     return day
 
 
-def save_ds_info(training_folder, flag_toy, batch_size, epochs, lr, dp_rate, lambda_l2_reg, save_dir, alpha_smooth_reg):
+def save_ds_info(training_folder, batch_size, epochs, lr, dp_rate, lambda_l2_reg, save_dir, alpha_smooth_reg):
     dict_info = {'train_ds': [training_folder],
-                 'is_toy': [flag_toy],
                  'batch_size': [batch_size],
                  'epoch': [epochs],
                  'lr': [lr],
